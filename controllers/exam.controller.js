@@ -134,7 +134,7 @@ exports.getAllExam = asyncHandler(async (req, res, next) => {
         },
       },
     },
-    { $sort: { sortOrder: 1 } },
+    { $sort: { sortOrder: 1, creationTime: -1 } },
     {
       $project: {
         _id: 1,
@@ -436,7 +436,7 @@ exports.submit_exam = asyncHandler(async (req, res, next) => {
     });
   }
 
-  res.clearCookie("exam")
+  res.clearCookie("exam");
 
   return sendResponse(res, 200, submission);
 });

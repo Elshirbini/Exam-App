@@ -63,7 +63,7 @@ exports.getAllStudents = asyncHandler(async (req, res, next) => {
         },
       },
     },
-    { $sort: { sortOrder: 1 } },
+    { $sort: { sortOrder: 1, creationTime: -1 } },
     {
       $project: {
         _id: 1,
