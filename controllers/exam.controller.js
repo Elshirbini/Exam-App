@@ -296,11 +296,8 @@ exports.loginToDegrees = asyncHandler(async (req, res, next) => {
     { expiresIn: process.env.EXPIRE_JWT_AUTH }
   );
 
-  const expires = new Date();
-  expires.setHours(expires.getHours() + 2);
-
   res.cookie("degree", token, {
-    expires,
+    maxAge: 2 * 60 * 60 * 1000,
     httpOnly: true,
     secure: process.env.MODE === "prod",
     sameSite: "strict",

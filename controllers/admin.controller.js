@@ -36,21 +36,21 @@ exports.login = asyncHandler(async (req, res, next) => {
       expiresIn: process.env.EXPIRE_JWT_AUTH,
     }
   );
-  const expirationDate = new Date();
-  expirationDate.setHours(expirationDate.getHours() + 2);
+
   res.cookie("accessToken", `${token}`, {
-    expires: expirationDate,
+    maxAge: 2 * 60 * 60 * 1000,
     httpOnly: true,
     secure: process.env.MODE === "prod",
     sameSite: "strict",
-  }),
-    sendResponse(res, 200, {
-      msg: "login successfully",
-      admin: true,
-      role: admin.role,
-      superAdmin: admin.role === "super_admin",
-      tokenExpiry: process.env.EXPIRE_JWT_AUTH,
-    });
+  });
+  
+  sendResponse(res, 200, {
+    msg: "login successfully",
+    admin: true,
+    role: admin.role,
+    superAdmin: admin.role === "super_admin",
+    tokenExpiry: process.env.EXPIRE_JWT_AUTH,
+  });
 });
 exports.getAll = asyncHandler(async (req, res, next) => {
   let query = {};
