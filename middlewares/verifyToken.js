@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/apiError.js");
-const asyncHandler = require("express-async-handler");
 const dotenv = require("dotenv");
 dotenv.config();
 
-exports.verifyToken = asyncHandler(async (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
   if (req.cookies["accessToken"]) {
     const Auth = req.cookies["accessToken"];
     jwt.verify(Auth, process.env.SECRET_KEY_JWT, async (err, user) => {
@@ -16,9 +15,9 @@ exports.verifyToken = asyncHandler(async (req, res, next) => {
   } else {
     throw new ApiError("You are not authenticated", 403);
   }
-});
+};
 
-exports.verifyTokenExam = asyncHandler(async (req, res, next) => {
+exports.verifyTokenExam = async (req, res, next) => {
   if (req.cookies["exam"]) {
     const Auth = req.cookies["exam"];
     jwt.verify(Auth, process.env.SECRET_KEY_JWT, async (err, data) => {
@@ -29,9 +28,9 @@ exports.verifyTokenExam = asyncHandler(async (req, res, next) => {
   } else {
     throw new ApiError("You are not authenticated", 403);
   }
-});
+};
 
-exports.verifyTokenDegree = asyncHandler(async (req, res, next) => {
+exports.verifyTokenDegree = async (req, res, next) => {
   if (req.cookies["degree"]) {
     const Auth = req.cookies["degree"];
     jwt.verify(Auth, process.env.SECRET_KEY_JWT, async (err, data) => {
@@ -42,4 +41,4 @@ exports.verifyTokenDegree = asyncHandler(async (req, res, next) => {
   } else {
     throw new ApiError("You are not authenticated", 403);
   }
-});
+};

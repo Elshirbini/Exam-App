@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const AdminDB = require("../models/admin.model.js");
-const asyncHandler = require("express-async-handler");
 
-const superAdmin = asyncHandler(async () => {
+const superAdmin = async () => {
   if (mongoose.connection.readyState !== 1) {
     console.error("Mongoose not connected. Please wait...");
     return;
@@ -16,6 +15,6 @@ const superAdmin = asyncHandler(async () => {
   }
   await AdminDB.create({ userName, password, role });
   console.log({ message: "superAdmin is created" });
-});
+};
 
 module.exports = superAdmin;

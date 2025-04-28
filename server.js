@@ -14,6 +14,8 @@ const app = express();
 dotenv.config();
 dbConnection();
 
+//                                 **Middlewares**
+
 app.use(
   cors({
     origin: [
@@ -32,6 +34,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(compression());
 app.use(helmet());
+
+
+//                                 **ROUTES**
 
 app.use("/api/user", userRoute);
 app.use("/api/admin", adminRoute);

@@ -15,7 +15,7 @@ const {
   deleteImage,
   addImage,
   loginToExam,
-  submit_exam,
+  submitExam,
   getExamDetails,
   takeExam,
   studentScores,
@@ -31,7 +31,7 @@ router.get("/exam-details/:studentCode/:examCode", getExamDetails);
 //                exams
 router.post("/login-to-exam", loginToExam);
 router.get("/take-exam", verifyTokenExam, takeExam);
-router.post("/submit-exam", verifyTokenExam, submit_exam);
+router.post("/submit-exam", verifyTokenExam, submitExam);
 
 router.use(verifyToken);
 router.use(restrictTo("super_admin", "exams"));

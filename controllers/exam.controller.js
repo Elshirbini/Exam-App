@@ -1,15 +1,14 @@
-const asyncHandler = require("express-async-handler");
 const examsDB = require("../models/exam.model.js");
 const usersDB = require("../models/user.model.js");
 const ApiError = require("../utils/apiError.js");
 const sendResponse = require("../utils/response.js");
 const crypto = require("crypto");
 const Cloudinary = require("../config/cloudinary.js");
-const StudentAnswers = require("../models/studentAnswers.js");
+const StudentAnswers = require("../models/studentAnswers.model.js");
 const { gradeMap, gradeOrder } = require("../utils/gradeMap.js");
 const jwt = require("jsonwebtoken");
 
-exports.addExam = asyncHandler(async (req, res, next) => {
+exports.addExam = async (req, res) => {
   const { title, description, grade, date, time, duration, questions } =
     req.body;
 
@@ -53,9 +52,9 @@ exports.addExam = asyncHandler(async (req, res, next) => {
   if (!exam) throw new ApiError("An error occurred", 500);
 
   return sendResponse(res, 201, exam._id);
-});
+};
 
-exports.addImage = asyncHandler(async (req, res, next) => {
+exports.addImage = async (req, res) => {
   const { examId } = req.params;
   const image = req.file.path;
 
@@ -74,9 +73,9 @@ exports.addImage = asyncHandler(async (req, res, next) => {
   await exam.save();
 
   return sendResponse(res, 200, "Image added successfully");
-});
+};
 
-exports.updateExam = asyncHandler(async (req, res, next) => {
+exports.updateExam = async (req, res) => {
   const { examId } = req.params;
   const { title, description, date, time, duration, questions } = req.body;
 
@@ -123,9 +122,9 @@ exports.updateExam = asyncHandler(async (req, res, next) => {
   await exam.save();
 
   return sendResponse(res, 200, exam);
-});
+};
 
-exports.getAllExam = asyncHandler(async (req, res, next) => {
+exports.getAllExam = async (req, res) => {
   const exams = await examsDB.aggregate([
     {
       $addFields: {
@@ -159,18 +158,18 @@ exports.getAllExam = asyncHandler(async (req, res, next) => {
   }));
 
   return sendResponse(res, 200, translatedExams);
-});
+};
 
-exports.getExam = asyncHandler(async (req, res, next) => {
+exports.getExam = async (req, res) => {
   const { examId } = req.params;
   const exam = await examsDB.findById(examId);
 
   if (!exam) throw new ApiError("هذا الامتحان غير موجود", 404);
 
   return sendResponse(res, 200, exam);
-});
+};
 
-exports.deleteExam = asyncHandler(async (req, res, next) => {
+exports.deleteExam = async (req, res) => {
   const { examId } = req.params;
   const exam = await examsDB.findByIdAndDelete(examId);
 
@@ -181,9 +180,9 @@ exports.deleteExam = asyncHandler(async (req, res, next) => {
   }
 
   return sendResponse(res, 200, "Exam deleted successfully");
-});
+};
 
-exports.deleteImage = asyncHandler(async (req, res, next) => {
+exports.deleteImage = async (req, res) => {
   const { examId } = req.params;
 
   const exam = await examsDB.findById(examId);
@@ -201,9 +200,9 @@ exports.deleteImage = asyncHandler(async (req, res, next) => {
   }
 
   return sendResponse(res, 200, "Image deleted successfully");
-});
+};
 
-exports.resetValidStudents = asyncHandler(async (req, res, next) => {
+exports.resetValidStudents = async (req, res) => {
   const { examId } = req.params;
   const exam = await examsDB.findById(examId);
   if (!exam) throw new ApiError("هذا الامتحان غير موجود", 404);
@@ -217,15 +216,15 @@ exports.resetValidStudents = asyncHandler(async (req, res, next) => {
   await exam.save();
 
   return sendResponse(res, 200, "success");
-});
+};
 
-exports.loginToExam = asyncHandler(async (req, res, next) => {
+exports.loginToExam = async (req, res) => {
   const { studentCode, examCode } = req.body;
   const student = await usersDB.findOne({ studentCode: studentCode });
   if (!student) throw new ApiError("هذا الطالب غير موجود", 404);
 
   const exam = await examsDB.findOne({
-    $and: [{ examCode: examCode }, { validStudents: { studentCode } }],
+    $and: [{ examCode: examCode }, { validStudents: { $elemMatch: { studentCode } } }],
   });
 
   if (!exam) {
@@ -264,11 +263,17 @@ exports.loginToExam = asyncHandler(async (req, res, next) => {
     throw new ApiError("انتهي الامتحان", 403);
   }
 
-  const token = jwt.sign(
-    { examCode: examCode, studentCode: studentCode },
-    process.env.SECRET_KEY_JWT,
-    { expiresIn: exam.duration.toLowerCase() }
-  );
+  const token = await new Promise((resolve, reject) => {
+    jwt.sign(
+      { examCode: examCode, studentCode: studentCode },
+      process.env.SECRET_KEY_JWT,
+      { expiresIn: exam.duration.toLowerCase() },
+      (err, token) => {
+        if (err) return reject(new ApiError("Error in signing token", 501));
+        resolve(token);
+      }
+    );
+  });
 
   res.cookie("exam", token, {
     expires: examDateTime,
@@ -282,19 +287,25 @@ exports.loginToExam = asyncHandler(async (req, res, next) => {
     examCode: examCode,
     studentCode: studentCode,
   });
-});
+};
 
-exports.loginToDegrees = asyncHandler(async (req, res, next) => {
+exports.loginToDegrees = async (req, res) => {
   const { studentCode } = req.body;
 
   const student = await usersDB.findOne({ studentCode: studentCode });
   if (!student) throw new ApiError("هذا الطالب غير موجود", 404);
 
-  const token = jwt.sign(
-    { studentCode: studentCode },
-    process.env.SECRET_KEY_JWT,
-    { expiresIn: process.env.EXPIRE_JWT_AUTH }
-  );
+  const token = await new Promise((resolve, reject) => {
+    jwt.sign(
+      { studentCode: studentCode },
+      process.env.SECRET_KEY_JWT,
+      { expiresIn: process.env.EXPIRE_JWT_AUTH },
+      (err, token) => {
+        if (err) return reject(new ApiError("Error in signing token", 501));
+        resolve(token);
+      }
+    );
+  });
 
   res.cookie("degree", token, {
     maxAge: 2 * 60 * 60 * 1000,
@@ -307,9 +318,9 @@ exports.loginToDegrees = asyncHandler(async (req, res, next) => {
     message: "Login successfully",
     studentCode,
   });
-});
+};
 
-exports.takeExam = asyncHandler(async (req, res, next) => {
+exports.takeExam = async (req, res) => {
   const { studentCode, examCode } = req.exam;
 
   const student = await usersDB.findOne({ studentCode: studentCode });
@@ -365,9 +376,9 @@ exports.takeExam = asyncHandler(async (req, res, next) => {
     examCode,
     studentCode,
   });
-});
+};
 
-exports.submit_exam = asyncHandler(async (req, res, next) => {
+exports.submitExam = async (req, res) => {
   const { studentCode, examCode } = req.query;
   const { answers } = req.body;
   const studentCode2 = req.exam.studentCode;
@@ -436,9 +447,9 @@ exports.submit_exam = asyncHandler(async (req, res, next) => {
   res.clearCookie("exam");
 
   return sendResponse(res, 200, submission);
-});
+};
 
-exports.studentScores = asyncHandler(async (req, res, next) => {
+exports.studentScores = async (req, res) => {
   const { studentCode } = req.params;
   const student_code = req.degree?.studentCode;
   const userRole = req.userRole;
@@ -487,9 +498,9 @@ exports.studentScores = asyncHandler(async (req, res, next) => {
   }
 
   return sendResponse(res, 200, { scores });
-});
+};
 
-exports.getExamDetails = asyncHandler(async (req, res, next) => {
+exports.getExamDetails = async (req, res) => {
   const { studentCode, examCode } = req.params;
 
   const studentDegrees = await StudentAnswers.findOne({ studentCode });
@@ -529,4 +540,4 @@ exports.getExamDetails = asyncHandler(async (req, res, next) => {
     detailedAnswers,
     score: examSubmission.score,
   });
-});
+};

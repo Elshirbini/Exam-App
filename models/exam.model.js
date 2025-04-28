@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const studentAnswers = require("./studentAnswers.js");
+const studentAnswers = require("./studentAnswers.model.js");
 
 const exams_Schema = new mongoose.Schema(
   {
@@ -35,18 +35,18 @@ const exams_Schema = new mongoose.Schema(
       {
         question_title: {
           type: String,
-          required : [true , "لا يمكن اضافه او تعديل امتحان به خانات فارغه"]
+          required: [true, "لا يمكن اضافه او تعديل امتحان به خانات فارغه"],
         },
         subQuestions: [
           {
             _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
             questionText: {
               type: String,
-              required : [true , "لا يمكن اضافه او تعديل امتحان به خانات فارغه"]
+              required: [true, "لا يمكن اضافه او تعديل امتحان به خانات فارغه"],
             },
             correctAnswer: {
               type: String,
-              required : [true , "لا يمكن اضافه او تعديل امتحان به خانات فارغه"]
+              required: [true, "لا يمكن اضافه او تعديل امتحان به خانات فارغه"],
             },
             options: [String],
           },

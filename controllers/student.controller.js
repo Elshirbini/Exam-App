@@ -1,11 +1,10 @@
-const asyncHandler = require("express-async-handler");
 const usersDB = require("../models/user.model");
 const ApiError = require("../utils/apiError");
 const sendResponse = require("../utils/response");
 const crypto = require("crypto");
 const { gradeMap, gradeOrder } = require("../utils/gradeMap.js");
 
-exports.addStudent = asyncHandler(async (req, res, next) => {
+exports.addStudent = async (req, res) => {
   const { name, grade, studentMobile, parentMobile } = req.body;
 
   const studentCode = crypto.randomBytes(4).toString("hex");
@@ -23,9 +22,9 @@ exports.addStudent = asyncHandler(async (req, res, next) => {
   }
 
   return sendResponse(res, 201, "Student created successfully");
-});
+};
 
-exports.updateStudent = asyncHandler(async (req, res, next) => {
+exports.updateStudent = async (req, res) => {
   const { name, grade, studentMobile, parentMobile } = req.body;
   const { studentId } = req.params;
 
@@ -43,18 +42,18 @@ exports.updateStudent = asyncHandler(async (req, res, next) => {
   if (!studentDoc) throw new ApiError("هذا الطالب غير موجود", 404);
 
   return sendResponse(res, 200, "Student updated successfully");
-});
+};
 
-exports.deleteStudent = asyncHandler(async (req, res, next) => {
+exports.deleteStudent = async (req, res) => {
   const { studentId } = req.params;
 
   const student = await usersDB.findByIdAndDelete(studentId);
   if (!student) throw new ApiError("هذا طالب غير موجود", 404);
 
   return sendResponse(res, 200, "Student deleted successfully");
-});
+};
 
-exports.getAllStudents = asyncHandler(async (req, res, next) => {
+exports.getAllStudents = async (req, res) => {
   const students = await usersDB.aggregate([
     {
       $addFields: {
@@ -82,10 +81,10 @@ exports.getAllStudents = asyncHandler(async (req, res, next) => {
   }));
 
   return sendResponse(res, 200, translatedStudents);
-});
+};
 
-exports.getOneStudent = asyncHandler(async (req, res, next) => {
+exports.getOneStudent = async (req, res) => {
   const student = await usersDB.findById(req.params.id);
   if (!student) throw new ApiError("هذا الطالب غير موجود", 404);
   return sendResponse(res, 200, student);
-});
+};

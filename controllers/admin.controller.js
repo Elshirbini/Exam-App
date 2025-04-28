@@ -1,14 +1,12 @@
-const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const apiError = require("../utils/apiError");
 const sendResponse = require("../utils/response");
 const ApiError = require("../utils/apiError");
 const adminDB = require("../models/admin.model.js");
 const dotenv = require("dotenv");
 dotenv.config();
 
-exports.addAdmin = asyncHandler(async (req, res, next) => {
+exports.addAdmin = async (req, res) => {
   const { userName, password, role } = req.body;
   const admin = await adminDB.create({
     userName,
@@ -16,17 +14,17 @@ exports.addAdmin = asyncHandler(async (req, res, next) => {
     role,
   });
   sendResponse(res, 200, `Admin ${admin.userName} Added successfully`);
-});
-exports.login = asyncHandler(async (req, res, next) => {
+};
+exports.login = async (req, res) => {
   const { userName, password } = req.body;
 
   const admin = await adminDB.findOne({ userName });
   if (!admin) {
-    throw new apiError("هذا المسئول غير موجود", 404);
+    throw new ApiError("هذا المسئول غير موجود", 404);
   }
   const isMatch = await bcrypt.compare(password, admin.password);
   if (!isMatch) {
-    throw new apiError("كلمه السر خاطئه", 404);
+    throw new ApiError("كلمة السر خاطئة", 404);
   }
 
   const token = jwt.sign(
@@ -43,7 +41,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     secure: process.env.MODE === "prod",
     sameSite: "strict",
   });
-  
+
   sendResponse(res, 200, {
     msg: "login successfully",
     admin: true,
@@ -51,8 +49,8 @@ exports.login = asyncHandler(async (req, res, next) => {
     superAdmin: admin.role === "super_admin",
     tokenExpiry: process.env.EXPIRE_JWT_AUTH,
   });
-});
-exports.getAll = asyncHandler(async (req, res, next) => {
+};
+exports.getAll = async (req, res) => {
   let query = {};
   const adminRole = req.userRole;
 
@@ -67,8 +65,8 @@ exports.getAll = asyncHandler(async (req, res, next) => {
   }
 
   return sendResponse(res, 200, admins);
-});
-exports.update = asyncHandler(async (req, res, next) => {
+};
+exports.update = async (req, res) => {
   const adminRole = req.userRole;
   let { userName, role } = req.body;
 
@@ -98,8 +96,8 @@ exports.update = asyncHandler(async (req, res, next) => {
   if (!admin) throw new ApiError("هذا المسئول غير موجود", 404);
 
   return sendResponse(res, 200, "Updated successfully");
-});
-exports.delete = asyncHandler(async (req, res, next) => {
+};
+exports.delete = async (req, res) => {
   const { id } = req.params;
   const superAdmin = await adminDB
     .findOne({ role: "super_admin" })
@@ -112,4 +110,4 @@ exports.delete = asyncHandler(async (req, res, next) => {
   await adminDB.findByIdAndDelete(id);
 
   return sendResponse(res, 200, "Deleted successfully");
-});
+};

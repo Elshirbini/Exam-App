@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const studentAnswers = require("./studentAnswers");
+const studentAnswers = require("./studentAnswers.model");
 
 const users_Schema = new mongoose.Schema(
   {
