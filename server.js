@@ -11,7 +11,6 @@ const examRoute = require("./routes/exam.route.js");
 const error = require("./middlewares/error");
 const app = express();
 dotenv.config();
-dbConnection();
 
 //                                 **Middlewares**
 
@@ -22,7 +21,7 @@ app.use(
       "https://mahmoud-ebrahim-elazony.tech",
       "https://www.mahmoud-ebrahim-elazony.tech",
     ],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE" ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
@@ -33,7 +32,6 @@ app.use(cookieParser());
 app.use(compression());
 app.use(helmet());
 
-
 //                                 **ROUTES**
 
 app.use("/api/user", userRoute);
@@ -42,10 +40,15 @@ app.use("/api/exam", examRoute);
 
 app.use(error);
 
-app.listen(process.env.PORT || 2000, () => {
-  console.log(
-    `Server is running on port ${process.env.PORT} on http://localhost:${
-      process.env.PORT || 2000
-    }`
-  );
-});
+if (!process.env.MODE === "test") {
+  app.listen(process.env.PORT || 2000, () => {
+    dbConnection();
+    console.log(
+      `Server is running on port ${process.env.PORT} on http://localhost:${
+        process.env.PORT || 2000
+      }`
+    );
+  });
+}
+
+module.exports = app;

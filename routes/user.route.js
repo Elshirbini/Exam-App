@@ -15,7 +15,7 @@ upload.none();
 router.use(verifyToken);
 router.get(
   "/all-Students",
-  restrictTo("super_admin", "user", "exams"),
+  restrictTo("super_admin", "exams"),
   getAllStudents
 );
 router.use(restrictTo("super_admin", "user"));
