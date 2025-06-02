@@ -4,11 +4,14 @@ const isTest = process.env.MODE === "test";
 
 const dbConnection = async () => {
   try {
-    await mongoose.connect(isTest ? process.env.DB_URL_TEST : process.env.DB_URL, { 
-      serverSelectionTimeoutMS: 50000 
-    });
+    await mongoose.connect(
+      isTest ? process.env.DB_URL_TEST : process.env.DB_URL,
+      {
+        serverSelectionTimeoutMS: 50000,
+      }
+    );
     console.log("Connected to MongoDB");
-    if(!isTest){
+    if (!isTest) {
       await superAdmin();
     }
   } catch (error) {

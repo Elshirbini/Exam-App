@@ -7,7 +7,7 @@ const superAdmin = async () => {
     return;
   }
   const userName = "01011638721";
-  const password = "MrMahmoud14@##@Ezo";
+  const password = "#@MrMahmoudEbrahim11@#";
   const role = "super_admin";
   let existingUser = await AdminDB.findOne({ userName });
   if (existingUser) {

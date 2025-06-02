@@ -13,7 +13,7 @@ exports.addExam = async (req, res) => {
     req.body;
 
   const dateNow = new Date();
-  dateNow.setHours(dateNow.getHours() + 2);
+  dateNow.setHours(dateNow.getHours() + 3);
 
   const examDateTime = new Date(`${date}T${time}:00Z`);
 
@@ -81,7 +81,7 @@ exports.updateExam = async (req, res) => {
 
   const dateNow = new Date();
 
-  dateNow.setHours(dateNow.getHours() + 2);
+  dateNow.setHours(dateNow.getHours() + 3);
 
   const exam = await examsDB.findById(examId);
   if (!exam) throw new ApiError("هذا الامتحان غير موجود", 404);
@@ -224,7 +224,10 @@ exports.loginToExam = async (req, res) => {
   if (!student) throw new ApiError("هذا الطالب غير موجود", 404);
 
   const exam = await examsDB.findOne({
-    $and: [{ examCode: examCode }, { validStudents: { $elemMatch: { studentCode } } }],
+    $and: [
+      { examCode: examCode },
+      { validStudents: { $elemMatch: { studentCode } } },
+    ],
   });
 
   if (!exam) {
@@ -243,9 +246,10 @@ exports.loginToExam = async (req, res) => {
   }
 
   const examDateTime = new Date(`${exam.date}T${exam.time}:00Z`);
-
+  console.log(examDateTime);
   const dateNow = new Date();
-  dateNow.setHours(dateNow.getHours() + 2);
+  dateNow.setHours(dateNow.getHours() + 3);
+  console.log(dateNow);
   if (examDateTime > dateNow) {
     throw new ApiError(`${exam.date} ${exam.time} : معاد الامتحان`, 403);
   }
@@ -342,7 +346,7 @@ exports.takeExam = async (req, res) => {
   const examDateTime = new Date(`${exam.date}T${exam.time}:00Z`);
 
   const dateNow = new Date();
-  dateNow.setHours(dateNow.getHours() + 2);
+  dateNow.setHours(dateNow.getHours() + 3);
   if (examDateTime > dateNow) {
     throw new ApiError(`${exam.date} ${exam.time} : معاد الامتحان`, 403);
   }
