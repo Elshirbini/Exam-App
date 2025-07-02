@@ -40,7 +40,7 @@ app.use("/api/exam", examRoute);
 
 app.use(error);
 
-if (process.env.MODE !== "test") {
+if (process.env.NODE_ENV !== "test") {
   app.listen(process.env.PORT || 2000, () => {
     dbConnection();
     console.log(

@@ -1,5 +1,5 @@
 module.exports = (er, req, res, next) => {
-  if (process.env.MODE === "dev") {
+  if (process.env.NODE_ENV === "dev") {
     return res.status(er.statusCode || 400).json({
       state: er.httpText || "Error",
       statusCode: er.statusCode || 404,

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const superAdmin = require("./superAdmin");
-const isTest = process.env.MODE === "test";
+const isTest = process.env.NODE_ENV === "test";
 
 const dbConnection = async () => {
   try {
