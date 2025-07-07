@@ -41,7 +41,7 @@ app.use("/api/exam", examRoute);
 app.use(error);
 
 if (process.env.NODE_ENV !== "test") {
-  app.listen(process.env.PORT || 2000, () => {
+  app.listen(process.env.PORT || 2000, "0.0.0.0", () => {
     dbConnection();
     console.log(
       `Server is running on port ${process.env.PORT} on http://localhost:${
