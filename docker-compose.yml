@@ -16,6 +16,8 @@ services:
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
     ports:
       - "2000:2000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - exam-network
 
