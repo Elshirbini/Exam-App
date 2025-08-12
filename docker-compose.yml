@@ -18,6 +18,9 @@ services:
       - "2000:2000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     networks:
       - exam-network
 
