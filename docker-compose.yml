@@ -14,8 +14,8 @@ services:
       - CLOUDINARY_NAME=${CLOUDINARY_NAME}
       - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-    ports:
-      - "2000:2000"
+    expose:
+      - "2000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     dns:
