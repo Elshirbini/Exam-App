@@ -1,43 +1,12 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: elshirbini/exam-app:latest
     restart: unless-stopped
-    environment:
-      - DB_URL=${DB_URL}
-      - DB_URL_TEST=${DB_URL_TEST}
-      - SECRET_KEY_JWT=${SECRET_KEY_JWT}
-      - EXPIRE_JWT_AUTH=${EXPIRE_JWT_AUTH}
-      - PORT=${PORT}
-      - NODE_ENV=${NODE_ENV}
-      - CLOUDINARY_NAME=${CLOUDINARY_NAME}
-      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
     ports:
-      - "2001:2000"
-    networks:
-      - exam-network
-  app2:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      - DB_URL=${DB_URL}
-      - DB_URL_TEST=${DB_URL_TEST}
-      - SECRET_KEY_JWT=${SECRET_KEY_JWT}
-      - EXPIRE_JWT_AUTH=${EXPIRE_JWT_AUTH}
-      - PORT=${PORT}
-      - NODE_ENV=${NODE_ENV}
-      - CLOUDINARY_NAME=${CLOUDINARY_NAME}
-      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-    ports:
-      - "2002:2000"
+      - "2000:2000"
     networks:
       - exam-network
 
 networks:
   exam-network:
-    driver: bridge
+    driver: overlay
