@@ -9,4 +9,4 @@ services:
 
 networks:
   exam-network:
-    driver: overlay
+    driver: bridge
